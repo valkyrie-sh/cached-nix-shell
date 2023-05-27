@@ -30,7 +30,7 @@ check_fast
 run cached-nix-shell -p --pure --keep FOO --run 'echo ${FOO-doesnt-have-foo}'
 check_contains "^foo-value$"
 # TODO: this should not invalidate the cache
-skip check_fast
+skip true check_fast
 
 
 run cached-nix-shell ./tmp/prefix.nix --keep FOO \
@@ -48,7 +48,7 @@ run cached-nix-shell ./tmp/prefix.nix --pure --keep FOO --keep BAR \
 check_contains "^prefix:foo-value$"
 check_contains "^bar-value$"
 # TODO: this should not invalidate the cache
-skip check_fast
+skip true check_fast
 
 
 run env TERM=term-value cached-nix-shell -p --pure \

@@ -39,7 +39,7 @@ run $expect tmp/run 'cached-nix-shell --pure -p' << 'EOF'
 echo uryyb jbeyq | tr a-z n-za-m
 EOF
 check_contains 'hello world'
-skip check_fast  # TODO: fix /tmp/nix-$$-* issue
+skip '[ "$(uname)" = Darwin ]' check_fast  # TODO: fix /tmp/nix-$$-* issue
 
 run cached-nix-shell --pure -p --exec true
 check_fast

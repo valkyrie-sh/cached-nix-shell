@@ -82,8 +82,8 @@ EOF
 # Skip because nix show-derivation fails
 run cached-nix-shell ./tmp/evaluation.nix --pure \
 	--run 'env -0 | LANG=C grep -z "^VAR1=" | cat -v'
-skip check_contains '^VAR1=AM-pB\^@$'
+skip true check_contains '^VAR1=AM-pB\^@$'
 
 run cached-nix-shell ./tmp/evaluation.nix --pure \
 	--run 'env -0 | LANG=C grep -z "^VAR.2=" | cat -v'
-skip check_contains '^VARM-q2=CD\^@$'
+skip true check_contains '^VARM-q2=CD\^@$'

@@ -20,6 +20,9 @@ jobs:
         signingKey: ${{ secrets.CACHIX_SIGNING_KEY }}
     - name: Build and install cached-nix-shell
       run: nix-env -i -f default.nix
+    - name: Workaround for Darwin
+      if: matrix.os == 'macos-latest'
+      run: cached-nix-shell -p --run true
     - name: Test cached-nix-shell
       run: ./tests/run.sh
     - name: Test nix-trace

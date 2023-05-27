@@ -55,12 +55,16 @@ not() {
 	! "$@"
 }
 
+skip=
+
 check() {
 	local text
 	text=$1
 	shift
-	if "$@";then
+	if "$@"; then
 		printf "\33[32m  + %s\33[m\n" "$text"
+	elif [ "$skip" ]; then
+		printf "\33[31;2m  - (ignore) %s\33[m\n" "$text"
 	else
 		printf "\33[31m  - %s\33[m\n" "$text"
 		result=1
@@ -78,4 +82,9 @@ check_fast() {
 		not grep -q "^cached-nix-shell: updating cache$" tmp/err
 }
 
-skip() { printf "\33[33m? skip %s\33[m\n" "$*"; }
+skip() {
+	local skip=
+	! eval "$1" || skip=1
+	shift
+	"$@"
+}

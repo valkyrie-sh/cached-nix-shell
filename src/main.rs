@@ -279,7 +279,7 @@ fn run_nix_shell(inp: &NixShellInput) -> NixShellOutput {
     trace_file
         .read_to_end(&mut trace_data)
         .expect("Can't read trace file");
-    let trace = Trace::load(trace_data);
+    let trace = Trace::load_raw(trace_data);
     if trace.check_for_changes() {
         eprintln!("cached-nix-shell: some files are already updated, cache won't be reused");
     }
@@ -572,7 +572,7 @@ fn check_cache(hash: &str) -> Option<BTreeMap<OsString, OsString>> {
         return None;
     }
 
-    let trace = read(trace_fname).unwrap().pipe(Trace::load);
+    let trace = read(trace_fname).unwrap().pipe(Trace::load_sorted);
     if trace.check_for_changes() {
         return None;
     }
