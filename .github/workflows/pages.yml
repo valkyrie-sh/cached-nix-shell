@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: git fetch --prune --unshallow --tags
-    - uses: cachix/install-nix-action@v12
+    - uses: cachix/install-nix-action@v27
       with:
         nix_path: nixpkgs=channel:nixos-unstable
     - run: nix-env -f '<nixpkgs>' -iA ronn
