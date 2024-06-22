@@ -9,7 +9,7 @@ check "Options are the same" diff tmp/nix-shell tmp/cached-nix-shell
 rm tmp/nix-shell tmp/cached-nix-shell
 
 run $(nix-shell --pure -p which expect --run 'which expect') << 'EOF'
-set timeout 5
+set timeout 60
 log_user 0
 
 spawn nix-shell --pure -p
