@@ -19,10 +19,10 @@ fn is_relative(b: &[u8]) -> bool {
         .position(|&c| c == b'=')
         .map(|x| x + 1)
         .unwrap_or(0);
-    b.get(pos) != Some(&b'/') && !is_uri(&b[pos..])
+    b.get(pos) != Some(&b'/') && !is_pseudo_url(&b[pos..])
 }
 
-/// Reference: https://github.com/NixOS/nix/blob/2.3.10/src/libexpr/eval.cc#L242-L277
+/// Reference: https://github.com/NixOS/nix/blob/2.23.0/src/libexpr/eval-settings.cc#L9-L45
 fn parse_nix_path(s: &[u8]) -> Vec<&[u8]> {
     let mut res = Vec::new();
     let mut p = 0;
@@ -45,7 +45,7 @@ fn parse_nix_path(s: &[u8]) -> Vec<&[u8]> {
         }
 
         if s[p] == b':' {
-            if is_uri(&s[start2..]) {
+            if is_pseudo_url(&s[start2..]) {
                 p += 1;
                 while p < s.len() && s[p] != b':' {
                     p += 1;
@@ -63,8 +63,8 @@ fn parse_nix_path(s: &[u8]) -> Vec<&[u8]> {
     res
 }
 
-/// Reference: https://github.com/NixOS/nix/blob/2.3.10/src/libstore/download.cc#L936-L943
-pub fn is_uri(s: &[u8]) -> bool {
+/// Reference: https://github.com/NixOS/nix/blob/2.23.0/src/libexpr/eval-settings.cc#L79-L86
+pub fn is_pseudo_url(s: &[u8]) -> bool {
     let prefixes = &[
         "channel:",
         "http://",
@@ -74,6 +74,7 @@ pub fn is_uri(s: &[u8]) -> bool {
         "git://",
         "s3://",
         "ssh://",
+        "flake:", // Not in the original code
     ];
     prefixes
         .iter()
@@ -82,28 +83,41 @@ pub fn is_uri(s: &[u8]) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_relative, parse_nix_path};
+    use super::*;
+
     macro_rules! v {
         ( $($a:literal),* ) => {{
             vec![ $( Vec::<u8>::from($a as &[_])),* ]
         }}
     }
+
     #[test]
-    fn it_works() {
+    fn test_parse_nix_path() {
         assert_eq!(parse_nix_path(b"foo:bar:baz"), v![b"foo", b"bar", b"baz"]);
         assert_eq!(
             parse_nix_path(b"foo:bar=something:baz"),
             v![b"foo", b"bar=something", b"baz"]
         );
         assert_eq!(
-            parse_nix_path(b"foo:bar=https://something:baz"),
-            v![b"foo", b"bar=https://something", b"baz"]
+            parse_nix_path(
+                b"foo:bar=https://something:baz=flake:something:qux"
+            ),
+            v![
+                b"foo",
+                b"bar=https://something",
+                b"baz=flake:something",
+                b"qux"
+            ]
         );
+    }
 
+    #[test]
+    fn test_is_relative() {
         assert!(is_relative(b"foo"));
         assert!(is_relative(b"foo=bar"));
         assert!(!is_relative(b"http://foo"));
         assert!(!is_relative(b"foo=/bar"));
         assert!(!is_relative(b"foo=http://bar"));
+        assert!(!is_relative(b"foo=flake:bar"));
     }
 }

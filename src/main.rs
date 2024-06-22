@@ -387,7 +387,7 @@ fn run_from_args(args: Vec<OsString>) {
             current_dir().expect("Can't get PWD")
         } else if arg.as_bytes().starts_with(b"<")
             && arg.as_bytes().ends_with(b">")
-            || nix_path::is_uri(arg.as_bytes())
+            || nix_path::is_pseudo_url(arg.as_bytes())
         {
             // in:  nix-shell '<foo>'
             // out: cd /var/empty; nix-shell '<foo>'
