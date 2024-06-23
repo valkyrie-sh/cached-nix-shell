@@ -1,14 +1,14 @@
 {
     "BLAKE3": {
-        "branch": "1.3.3",
+        "branch": "1.5.1",
         "description": "official implementations of the BLAKE3 cryptographic hash function",
         "homepage": "",
         "owner": "BLAKE3-team",
         "repo": "BLAKE3",
-        "rev": "67e4d04a3c025288ecb1276800d435577e2008bd",
-        "sha256": "0im7v8rlma97yrq5jkkn6c2dmci6kzp9w180awspbj277fr6ivkx",
+        "rev": "54930c95227daaac4dcf1eb3028e2f4e0768d139",
+        "sha256": "05v3174ajp193va9i8qh760zy5f30988pyi8bzvddbnak2f80da9",
         "type": "tarball",
-        "url": "https://github.com/BLAKE3-team/BLAKE3/archive/67e4d04a3c025288ecb1276800d435577e2008bd.tar.gz",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/archive/54930c95227daaac4dcf1eb3028e2f4e0768d139.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "gitignore": {
@@ -17,10 +17,10 @@
         "homepage": "",
         "owner": "hercules-ci",
         "repo": "gitignore",
-        "rev": "a20de23b925fd8264fd7fad6454652e142fd7f73",
-        "sha256": "07vg2i9va38zbld9abs9lzqblz193vc5wvqd6h7amkmwf66ljcgh",
+        "rev": "637db329424fd7e46cf4185293b9cc8c88c95394",
+        "sha256": "02wxkdpbhlm3yk5mhkhsp3kwakc16xpmsf2baw57nz1dg459qv8w",
         "type": "tarball",
-        "url": "https://github.com/hercules-ci/gitignore/archive/a20de23b925fd8264fd7fad6454652e142fd7f73.tar.gz",
+        "url": "https://github.com/hercules-ci/gitignore/archive/637db329424fd7e46cf4185293b9cc8c88c95394.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "naersk": {
@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "nmattia",
         "repo": "naersk",
-        "rev": "88cd22380154a2c36799fe8098888f0f59861a15",
-        "sha256": "1wxi05lz4p2484w7iyw4k4fkxsqq8lkcsyjb87i34i40yz6fxwk6",
+        "rev": "941ce6dc38762a7cfb90b5add223d584feed299b",
+        "sha256": "0y9hnqs3v09zrcia11f18ynx9c52h4a6mc26nwlrbnh8cv0h4nxq",
         "type": "tarball",
-        "url": "https://github.com/nmattia/naersk/archive/88cd22380154a2c36799fe8098888f0f59861a15.tar.gz",
+        "url": "https://github.com/nmattia/naersk/archive/941ce6dc38762a7cfb90b5add223d584feed299b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
