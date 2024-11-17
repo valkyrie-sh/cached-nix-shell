@@ -37,15 +37,34 @@ fn shellwords(s: &[u8]) -> Vec<Vec<u8>> {
     let mut begin = 0;
     let mut cur = Vec::new();
     let mut state = true;
+    let mut single = false;
     loop {
-        if state {
+        if state && !single {
             if let Some(match_len) = re_whitespaces_len(&s[it..]) {
+                if s[begin] == b'\'' {
+                    single = true;
+                    continue;
+                }
                 cur.extend_from_slice(&s[begin..it]);
                 res.push(cur);
                 cur = Vec::new();
                 it += match_len;
                 begin = it;
             }
+        }
+        if single {
+            while it < s.len() && s[it] != b'\'' {
+                it += 1;
+            }
+            if it == s.len() {
+                break;
+            }
+            cur.extend_from_slice(&s[begin + 1..it]);
+            res.push(cur);
+            cur = Vec::new();
+            it += 1;
+            begin = it;
+            single = false;
         }
         match s.get(it) {
             Some(b'"') => {

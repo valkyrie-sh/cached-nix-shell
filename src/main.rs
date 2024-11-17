@@ -17,6 +17,7 @@ use std::os::unix::process::ExitStatusExt;
 use std::path::{Path, PathBuf};
 use std::process::{exit, Command, Stdio};
 use std::time::Instant;
+use std::fs;
 use tempfile::NamedTempFile;
 use ufcs::Pipe;
 
@@ -35,11 +36,6 @@ struct EnvOptions {
     bashopts: OsString,
     shellopts: OsString,
 }
-
-static XDG_DIRS: Lazy<xdg::BaseDirectories> = Lazy::new(|| {
-    xdg::BaseDirectories::with_prefix("cached-nix-shell")
-        .expect("Can't get find base cache directory")
-});
 
 /// Serialize environment variables in the same way as `env -0` does.
 fn serialize_env(env: &EnvMap) -> Vec<u8> {
@@ -561,9 +557,13 @@ fn build_bash_options(env: &EnvOptions) -> Vec<OsString> {
 }
 
 fn check_cache(hash: &str) -> Option<BTreeMap<OsString, OsString>> {
-    let env_fname = XDG_DIRS.find_cache_file(format!("{hash}.env"))?;
-    let drv_fname = XDG_DIRS.find_cache_file(format!("{hash}.drv"))?;
-    let trace_fname = XDG_DIRS.find_cache_file(format!("{hash}.trace"))?;
+    let env_fname = PathBuf::from(format!("{hash}.env"));
+    let drv_fname = PathBuf::from(format!("{hash}.drv"));
+    let trace_fname = PathBuf::from(format!("{hash}.trace"));
+
+    if !env_fname.exists() || !drv_fname.exists() || !trace_fname.exists() {
+        return None;
+    }
 
     let env = read(env_fname).unwrap().pipe(deserealize_env);
 
@@ -582,8 +582,7 @@ fn check_cache(hash: &str) -> Option<BTreeMap<OsString, OsString>> {
 
 fn cache_write(hash: &str, ext: &str, text: &[u8]) {
     let f = || -> Result<(), std::io::Error> {
-        let fname = XDG_DIRS.place_cache_file(format!("{hash}.{ext}"))?;
-        let mut file = File::create(fname)?;
+        let mut file = File::create(format!("/nix/cache/{hash}.{ext}"))?;
         file.write_all(text)?;
         Ok(())
     };
@@ -595,7 +594,7 @@ fn cache_write(hash: &str, ext: &str, text: &[u8]) {
 
 fn cache_symlink(hash: &str, ext: &str, target: &str) {
     let f = || -> Result<(), std::io::Error> {
-        let fname = XDG_DIRS.place_cache_file(format!("{hash}.{ext}"))?;
+        let fname = PathBuf::from(format!("/nix/cache/{hash}.{ext}"));
         let _ = std::fs::remove_file(&fname);
         std::os::unix::fs::symlink(target, &fname)?;
         Ok(())
@@ -642,6 +641,17 @@ fn wrap(cmd: Vec<OsString>) {
 }
 
 fn main() {
+    let path = Path::new("/nix/cache");
+    if !path.exists() {
+        match fs::create_dir(path) {
+            Ok(_) => println!("Directory created successfully."),
+            Err(e) => {
+                println!("Failed to create directory: {}", e);
+                return
+            }
+        }
+    }
+
     let argv: Vec<OsString> = std::env::args_os().collect();
 
     if argv.len() >= 2 && argv[1] == "--wrap" {
