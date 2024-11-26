@@ -557,9 +557,9 @@ fn build_bash_options(env: &EnvOptions) -> Vec<OsString> {
 }
 
 fn check_cache(hash: &str) -> Option<BTreeMap<OsString, OsString>> {
-    let env_fname = PathBuf::from(format!("{hash}.env"));
-    let drv_fname = PathBuf::from(format!("{hash}.drv"));
-    let trace_fname = PathBuf::from(format!("{hash}.trace"));
+    let env_fname = PathBuf::from(format!("/nix/cache/{hash}.env"));
+    let drv_fname = PathBuf::from(format!("/nix/cache/{hash}.drv"));
+    let trace_fname = PathBuf::from(format!("/nix/cache/{hash}.trace"));
 
     if !env_fname.exists() || !drv_fname.exists() || !trace_fname.exists() {
         return None;
